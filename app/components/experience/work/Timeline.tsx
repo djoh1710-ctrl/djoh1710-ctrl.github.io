@@ -32,12 +32,18 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
     fillOpacity: 2 - 2 * diff,
   }), [textAlign, diff]);
 
+  // Narrower wrap on mobile: the group is scaled down (0.35x) but maxWidth
+  // is measured in local units before that scale, and a narrow phone's
+  // horizontal FOV is tighter too — a width tuned for desktop can still run
+  // past the edge of a portrait screen if it isn't reined in separately.
+  const maxWidth = isMobile ? 2.2 : 4;
+
   const titleProps = useMemo(() => ({
     ...textProps,
     font: "./soria-font.ttf",
     fontSize: 0.6,
-    maxWidth: 4,
-  }), [textProps]);
+    maxWidth,
+  }), [textProps, maxWidth]);
 
   return (
     <group position={point.point} scale={isMobile ? 0.35 : 0.6}>
@@ -51,10 +57,10 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
             {point.year}
           </Text>
           <group position={[0, -0.5, 0]}>
-            <Text {...titleProps} fontSize={0.6} maxWidth={4} position={[0, -diff / 2, 0]}>
+            <Text {...titleProps} fontSize={0.6} maxWidth={maxWidth} position={[0, -diff / 2, 0]}>
               {point.title}
             </Text>
-            <Text {...textProps} fontSize={0.2} maxWidth={4} lineHeight={1.3} position={[0, -2.2 - diff, 0]}>
+            <Text {...textProps} fontSize={0.2} maxWidth={maxWidth} lineHeight={1.3} position={[0, -2.2 - diff, 0]}>
               {point.subtitle}
             </Text>
           </group>

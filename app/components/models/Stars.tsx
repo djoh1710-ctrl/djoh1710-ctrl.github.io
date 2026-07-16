@@ -21,10 +21,48 @@ interface Digit {
   isOne: boolean;
 }
 
+// A 2-cell "0" / "1" sprite atlas, generated once on the client. Using
+// real glyphs (instead of abstract bar/ring shapes) so the field actually
+// reads as binary code, while still batching into just two instanced draw
+// calls total regardless of digit count.
+const useGlyphTexture = () => useMemo(() => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.clearRect(0, 0, 128, 64);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 44px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('0', 32, 34);
+    ctx.fillText('1', 96, 34);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}, []);
+
+// Remaps a unit plane's UVs onto one half of the 2-cell atlas.
+const useGlyphGeometry = (uOffset: number) => useMemo(() => {
+  const geometry = new THREE.PlaneGeometry(1, 1);
+  const uv = geometry.attributes.uv;
+  for (let i = 0; i < uv.count; i++) {
+    uv.setX(i, uOffset + uv.getX(i) * 0.5);
+  }
+  uv.needsUpdate = true;
+  return geometry;
+}, [uOffset]);
+
 const StarsContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
   const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
   const color = isDarkTheme ? '#7C9EFF' : '#3D4F99';
+
+  const texture = useGlyphTexture();
+  const zeroGeometry = useGlyphGeometry(0);
+  const oneGeometry = useGlyphGeometry(0.5);
 
   const digits = useMemo(() => (
     Array.from({ length: DIGIT_COUNT }, (_, index): Digit => {
@@ -42,7 +80,7 @@ const StarsContainer = () => {
           seededRandom(index * 55.291 + 5) * Math.PI,
           0,
         ],
-        scale: 0.5 + seededRandom(index * 63.982 + 6) * 0.9,
+        scale: 1.4 + seededRandom(index * 63.982 + 6) * 2,
         isOne: seededRandom(index * 91.345 + 7) > 0.5,
       };
     })
@@ -60,16 +98,14 @@ const StarsContainer = () => {
   return (
     <group ref={groupRef}>
       {/* Two instanced draw calls total, regardless of digit count. */}
-      <Instances limit={Math.max(ones.length, 1)} range={ones.length}>
-        <boxGeometry args={[0.16, 1, 0.05]} />
-        <meshBasicMaterial color={color} transparent opacity={0.55} />
+      <Instances geometry={oneGeometry} limit={Math.max(ones.length, 1)} range={ones.length}>
+        <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
         {ones.map((digit, i) => (
           <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale} />
         ))}
       </Instances>
-      <Instances limit={Math.max(zeros.length, 1)} range={zeros.length}>
-        <torusGeometry args={[0.4, 0.13, 8, 12]} />
-        <meshBasicMaterial color={color} transparent opacity={0.55} />
+      <Instances geometry={zeroGeometry} limit={Math.max(zeros.length, 1)} range={zeros.length}>
+        <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
         {zeros.map((digit, i) => (
           <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale} />
         ))}
