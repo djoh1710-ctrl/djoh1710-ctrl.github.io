@@ -3,6 +3,7 @@
 import { Text } from "@react-three/drei";
 
 import { useProgress } from "@react-three/drei";
+import { useThemeStore } from "@stores";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -14,6 +15,7 @@ import TextWindow from "./TextWindow";
 const Hero = () => {
   const titleRef = useRef<THREE.Mesh>(null);
   const { progress } = useProgress();
+  const textColor = useThemeStore((state) => state.theme.text);
 
   useEffect(() => {
     if (progress === 100 && titleRef.current) {
@@ -35,7 +37,7 @@ const Hero = () => {
 
   return (
     <>
-      <Text position={[0, 2, -10]} color="#E8E6E3" {...fontProps} ref={titleRef}>Hi, I am Danica Johnson.</Text>
+      <Text position={[0, 2, -10]} color={textColor} {...fontProps} ref={titleRef}>Hi, I am Danica Johnson.</Text>
       <StarsContainer />
       <CloudContainer/>
       <group position={[0, -25, 5.69]}>

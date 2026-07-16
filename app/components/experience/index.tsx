@@ -1,6 +1,6 @@
 import { Text, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { usePortalStore } from "@stores";
+import { usePortalStore, useThemeStore } from "@stores";
 import { useRef } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from 'three';
@@ -13,11 +13,12 @@ const Experience = () => {
   const groupRef = useRef<THREE.Group>(null);
   const data = useScroll();
   const isActive = usePortalStore((state) => !!state.activePortalId);
+  const textColor = useThemeStore((state) => state.theme.text);
 
   const fontProps = {
     font: "./soria-font.ttf",
     fontSize: 0.4,
-    color: '#E8E6E3',
+    color: textColor,
   };
 
   useFrame((sate, delta) => {

@@ -1,7 +1,7 @@
 
 import { Edges, MeshPortalMaterial, Text, TextProps, useScroll } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
-import { usePortalStore } from '@stores';
+import { usePortalStore, useThemeStore } from '@stores';
 import gsap from "gsap";
 import { useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
@@ -25,6 +25,7 @@ const GridTile = (props: GridTileProps) => {
   const portalRef = useRef(null);
   const { title, textAlign, children, color, position, id } = props;
   const { camera } = useThree();
+  const textColor = useThemeStore((state) => state.theme.text);
   const setActivePortal = usePortalStore((state) => state.setActivePortal);
   const isActive = usePortalStore((state) => state.activePortalId === id);
   const activePortalId = usePortalStore((state) => state.activePortalId);
@@ -37,7 +38,7 @@ const GridTile = (props: GridTileProps) => {
       gsap.to(titleRef.current, {
         fontSize: 0.13,
         maxWidth: 4,
-        color: isWork ? '#FFF' : '#888',
+        color: textColor,
         letterSpacing: 0.4,
       });
       gsap.to(titleRef.current.position, {
@@ -133,7 +134,7 @@ const GridTile = (props: GridTileProps) => {
     anchorX: 'center',
     anchorY: 'bottom',
     fontSize: 0.7,
-    color: '#E8E6E3',
+    color: textColor,
     textAlign: textAlign,
     fillOpacity: 0,
   };

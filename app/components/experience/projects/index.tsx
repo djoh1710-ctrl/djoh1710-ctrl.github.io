@@ -6,6 +6,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore } from "@stores";
 import CodeOrb from "../../models/CodeOrb";
+import PortalBackdrop from "../../models/PortalBackdrop";
 import ProjectsCarousel from "./ProjectsCarousel";
 import { TouchPanControls } from "./TouchPanControls";
 
@@ -37,6 +38,7 @@ const Projects = () => {
 
   return (
     <group>
+      <PortalBackdrop src="/backgrounds/projects-bg.jpg" />
       <CodeOrb color="#F2A65A" symbol="</>" scale={new THREE.Vector3(1.6, 1.6, 1.6)} position={new THREE.Vector3(0, -1, -1)}/>
       <ProjectsCarousel />
       { isActive && isMobile && <TouchPanControls /> }

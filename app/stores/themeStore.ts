@@ -4,14 +4,17 @@ import { persist } from "zustand/middleware";
 interface Theme {
   type: string;
   color: string;
+  text: string;
 }
 
 const AvailableThemes: Theme[] = [{
   type: 'light',
-  color: '#F4F1EA'
+  color: '#F4F1EA',
+  text: '#1A1A1A',
 }, {
   type: 'dark',
-  color: '#0B0E14'
+  color: '#0B0E14',
+  text: '#E8E6E3',
 }];
 
 interface ThemeStore {
