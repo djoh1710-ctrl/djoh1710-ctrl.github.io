@@ -3,6 +3,7 @@ import { Instance, Instances } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { getGlowTexture } from "./glowTexture";
 
 const DIGIT_COUNT = 400;
 const RADIUS = 200;
@@ -66,6 +67,7 @@ const StarsContainer = () => {
   const color = isDarkTheme ? '#7C9EFF' : '#4C63E0';
 
   const texture = useGlyphTexture();
+  const glowTexture = useMemo(() => getGlowTexture(), []);
   const zeroGeometry = useGlyphGeometry(0);
   const oneGeometry = useGlyphGeometry(0.5);
 
@@ -108,7 +110,23 @@ const StarsContainer = () => {
 
   return (
     <group ref={groupRef}>
-      {/* Two instanced draw calls total, regardless of digit count. */}
+      {/* Manual additive glow — identical in both themes, unlike a
+          post-processing bloom pass which only lights up colors bright
+          enough to cross a luminance threshold. */}
+      <Instances limit={Math.max(digits.length, 1)} range={digits.length}>
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial
+          map={glowTexture}
+          color={color}
+          transparent
+          opacity={0.5}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false} />
+        {digits.map((digit, i) => (
+          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier * 2.2} />
+        ))}
+      </Instances>
+      {/* Two instanced draw calls total for the glyphs themselves. */}
       <Instances geometry={oneGeometry} limit={Math.max(ones.length, 1)} range={ones.length}>
         <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
         {ones.map((digit, i) => (

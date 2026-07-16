@@ -11,10 +11,9 @@ interface CodeOrbProps {
 }
 
 // Lightweight layered centerpiece used in place of the heavy artwork GLB
-// models — a couple of cheap primitives (translucent core, wireframe shell,
-// text) instead of a shadow-casting multi-mesh model with a large texture.
-// The glow comes from the scene's real bloom pass now, so no manual
-// additive-blend halo mesh is needed here.
+// models — a handful of cheap primitives (additive glow halo, translucent
+// core, wireframe shell, text) instead of a shadow-casting multi-mesh model
+// with a large texture.
 const CodeOrb = ({ position, scale, color, symbol }: CodeOrbProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Mesh>(null);
@@ -32,6 +31,16 @@ const CodeOrb = ({ position, scale, color, symbol }: CodeOrbProps) => {
 
   return (
     <group position={position} scale={scale} ref={groupRef}>
+      {/* Soft additive glow halo */}
+      <mesh>
+        <sphereGeometry args={[2.3, 16, 16]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.1}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false} />
+      </mesh>
       {/* Translucent glowing core, counter-rotating for depth */}
       <mesh ref={coreRef}>
         <icosahedronGeometry args={[1.05, 1]} />

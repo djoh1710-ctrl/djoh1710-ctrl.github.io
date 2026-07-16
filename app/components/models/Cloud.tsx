@@ -2,6 +2,7 @@ import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { getGlowTexture } from "./glowTexture";
 
 const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
 const SYMBOL_COUNT = 40;
@@ -22,6 +23,7 @@ const seededRandom = (seed: number) => {
 
 const CloudContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
+  const glowTexture = useMemo(() => getGlowTexture(), []);
 
   const symbols = useMemo(() => (
     Array.from({ length: SYMBOL_COUNT }, (_, i) => {
@@ -60,6 +62,17 @@ const CloudContainer = () => {
     <group position={[0, -5, 0]} ref={groupRef}>
       {symbols.map((symbol, i) => (
         <group key={i} position={symbol.position}>
+          {/* Manual additive glow — identical in both themes */}
+          <mesh scale={symbol.fontSize * 2.4}>
+            <planeGeometry args={[1, 1]} />
+            <meshBasicMaterial
+              map={glowTexture}
+              color={symbol.color}
+              transparent
+              opacity={0.6}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false} />
+          </mesh>
           {/* Real 3D shape behind the glyph, not just flat text */}
           <mesh>
             <octahedronGeometry args={[symbol.fontSize * 0.55, 0]} />
