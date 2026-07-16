@@ -1,5 +1,6 @@
 import { Svg, useCursor, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { useThemeStore } from "@stores";
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
@@ -10,6 +11,8 @@ import { FooterLink } from "../../types";
 const FooterLinkItem = ({ link }: { link: FooterLink }) => {
   const iconRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
+  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
+  const iconSrc = isDarkTheme ? link.icon : link.icon.replace('.svg', '-dark.svg');
   const onPointerOver = () => setHovered(true);
   const onPointerOut = () => setHovered(false);
   const onClick = () => window.open(link.url, '_blank');
@@ -70,7 +73,7 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
       ref={iconRef}
       onClick={onClick}
       {...(!isMobile && { onPointerOver, onPointerMove, onPointerOut })}>
-      <Svg scale={0.0015} position={[0.1, 0.25, 0]} src={link.icon} />
+      <Svg scale={0.0015} position={[0.1, 0.25, 0]} src={iconSrc} />
     </group>
   );
 }

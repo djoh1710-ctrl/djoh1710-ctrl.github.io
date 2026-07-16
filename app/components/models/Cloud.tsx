@@ -15,6 +15,12 @@ const POSITIONS: [number, number, number][] = [
   [4, -22, 16],
   [14, -14, -8],
   [-3, 6, -10],
+  [-9, -5, 18],
+  [7, -18, -6],
+  [-16, -10, 8],
+  [2, 8, -12],
+  [16, 1, 12],
+  [-4, -16, -2],
 ];
 
 // Deterministic pseudo-random (sine-hash) so values are stable across
@@ -33,10 +39,13 @@ const CloudContainer = () => {
       position,
       text: SYMBOLS[i % SYMBOLS.length],
       fontSize: 3 + seededRandom(i * 12.9898 + 1) * 2.5,
-      color: i % 2 === 0 ? '#7C9EFF' : '#F2A65A',
+      isBlue: i % 2 === 0,
       phase: seededRandom(i * 78.233 + 2) * Math.PI * 2,
     }))
   ), []);
+
+  const blueColor = isDarkTheme ? '#7C9EFF' : '#3D4F99';
+  const amberColor = isDarkTheme ? '#F2A65A' : '#95591A';
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
@@ -54,7 +63,7 @@ const CloudContainer = () => {
           key={i}
           position={symbol.position}
           fontSize={symbol.fontSize}
-          color={symbol.color}
+          color={symbol.isBlue ? blueColor : amberColor}
           fillOpacity={isDarkTheme ? 0.75 : 0.7}
           font="./soria-font.ttf"
           anchorX="center"

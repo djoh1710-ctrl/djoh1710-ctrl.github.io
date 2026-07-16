@@ -4,7 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const STRAND_COUNT = 80;
+const STRAND_COUNT = 140;
 const RADIUS = 200;
 
 // Deterministic pseudo-random (sine-hash) so the field is stable across
@@ -48,7 +48,7 @@ const StarsContainer = () => {
     }
   });
 
-  if (!isDarkTheme) return null;
+  const color = isDarkTheme ? '#7C9EFF' : '#3D4F99';
 
   return (
     <group ref={groupRef}>
@@ -57,7 +57,7 @@ const StarsContainer = () => {
           key={i}
           position={strand.position}
           fontSize={strand.fontSize}
-          color="#7C9EFF"
+          color={color}
           fillOpacity={strand.opacity}
           font="./Vercetti-Regular.woff"
           anchorX="center"
