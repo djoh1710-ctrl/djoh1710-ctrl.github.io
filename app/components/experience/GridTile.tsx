@@ -133,7 +133,7 @@ const GridTile = (props: GridTileProps) => {
     anchorX: 'center',
     anchorY: 'bottom',
     fontSize: 0.7,
-    color: 'white',
+    color: '#E8E6E3',
     textAlign: textAlign,
     fillOpacity: 0,
   };
