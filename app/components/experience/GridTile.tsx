@@ -1,7 +1,7 @@
 
 import { Edges, MeshPortalMaterial, Text, TextProps, useScroll } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
-import { usePortalStore, useThemeStore } from '@stores';
+import { usePortalStore } from '@stores';
 import gsap from "gsap";
 import { useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
@@ -25,7 +25,10 @@ const GridTile = (props: GridTileProps) => {
   const portalRef = useRef(null);
   const { title, textAlign, children, color, position, id } = props;
   const { camera } = useThree();
-  const textColor = useThemeStore((state) => state.theme.text);
+  // Always light: this title sits on the portal tile face, which always
+  // previews the portal's fixed dark interior underneath, regardless of
+  // the page's light/dark theme toggle.
+  const textColor = '#E8E6E3';
   const setActivePortal = usePortalStore((state) => state.setActivePortal);
   const isActive = usePortalStore((state) => state.activePortalId === id);
   const activePortalId = usePortalStore((state) => state.activePortalId);
