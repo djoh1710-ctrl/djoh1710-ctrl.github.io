@@ -4,7 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const STRAND_COUNT = 140;
+const STRAND_COUNT = 260;
 const RADIUS = 200;
 
 // Deterministic pseudo-random (sine-hash) so the field is stable across

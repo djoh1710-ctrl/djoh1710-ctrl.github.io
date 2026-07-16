@@ -5,23 +5,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
-
-const POSITIONS: [number, number, number][] = [
-  [-11, 3, -4],
-  [9, 4, 6],
-  [-6, -12, 14],
-  [12, -8, 4],
-  [-14, -18, 20],
-  [4, -22, 16],
-  [14, -14, -8],
-  [-3, 6, -10],
-  [-9, -5, 18],
-  [7, -18, -6],
-  [-16, -10, 8],
-  [2, 8, -12],
-  [16, 1, 12],
-  [-4, -16, -2],
-];
+const SYMBOL_COUNT = 26;
 
 // Deterministic pseudo-random (sine-hash) so values are stable across
 // re-renders without calling Math.random during render.
@@ -35,13 +19,20 @@ const CloudContainer = () => {
   const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
 
   const symbols = useMemo(() => (
-    POSITIONS.map((position, i) => ({
-      position,
-      text: SYMBOLS[i % SYMBOLS.length],
-      fontSize: 3 + seededRandom(i * 12.9898 + 1) * 2.5,
-      isBlue: i % 2 === 0,
-      phase: seededRandom(i * 78.233 + 2) * Math.PI * 2,
-    }))
+    Array.from({ length: SYMBOL_COUNT }, (_, i) => {
+      const position: [number, number, number] = [
+        -16 + seededRandom(i * 12.9898 + 1) * 32,
+        4 - seededRandom(i * 78.233 + 2) * 26,
+        -12 + seededRandom(i * 37.719 + 3) * 32,
+      ];
+      return {
+        position,
+        text: SYMBOLS[i % SYMBOLS.length],
+        fontSize: 2.5 + seededRandom(i * 45.164 + 4) * 2.5,
+        isBlue: i % 2 === 0,
+        phase: seededRandom(i * 91.345 + 5) * Math.PI * 2,
+      };
+    })
   ), []);
 
   const blueColor = isDarkTheme ? '#7C9EFF' : '#3D4F99';
@@ -51,7 +42,7 @@ const CloudContainer = () => {
     if (!groupRef.current) return;
     groupRef.current.children.forEach((child, i) => {
       const t = clock.elapsedTime * 0.3 + symbols[i].phase;
-      child.position.y = POSITIONS[i][1] + Math.sin(t) * 0.6;
+      child.position.y = symbols[i].position[1] + Math.sin(t) * 0.6;
       child.rotation.z = Math.sin(t * 0.5) * 0.05;
     });
   });
