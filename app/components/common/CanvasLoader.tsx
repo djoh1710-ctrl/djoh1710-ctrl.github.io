@@ -20,6 +20,7 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
   const ref= useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const backgroundColor = useThemeStore((state) => state.theme.color);
+  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
   const { progress } = useProgress();
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const isMobile = useIsMobile();
@@ -74,7 +75,11 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
           dpr={[1, 2]}>
           {/* <Perf/> */}
           <Suspense fallback={null}>
-            <fogExp2 attach="fog" args={[backgroundColor, 0.008]} />
+            {/* Fog washes distant colors toward the fog color. In light
+                mode that's near-white, which erases colored elements
+                against an already-light background — so it needs to be
+                much gentler there than in dark mode. */}
+            <fogExp2 attach="fog" args={[backgroundColor, isDarkTheme ? 0.008 : 0.0015]} />
             <ambientLight intensity={0.5} />
 
             <ScrollControls pages={4} damping={0.4} maxSpeed={1} distance={1} style={{ zIndex: 1 }}>

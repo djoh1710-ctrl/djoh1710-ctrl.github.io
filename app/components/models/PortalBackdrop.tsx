@@ -13,7 +13,7 @@ const PortalBackdrop = ({ src }: PortalBackdropProps) => {
 
   return (
     <mesh>
-      <sphereGeometry args={[180, 32, 32]} />
+      <sphereGeometry args={[180, 18, 18]} />
       <meshBasicMaterial map={texture} side={THREE.BackSide} />
     </mesh>
   );
