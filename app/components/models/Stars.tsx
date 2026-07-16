@@ -1,3 +1,4 @@
+import { useThemeStore } from "@/app/stores";
 import { Instance, Instances } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
@@ -56,11 +57,13 @@ const useGlyphGeometry = (uOffset: number) => useMemo(() => {
 
 const StarsContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
-  // Kept vividly colored in both themes on purpose: this is decorative
-  // ambiance, not text that needs contrast rules, and bloom only triggers
-  // on genuinely bright colors — a darkened "light mode" variant would
-  // never be bright enough to glow.
-  const color = '#7C9EFF';
+  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
+  // Both variants are deliberately kept bright enough to still trigger
+  // bloom (luminance comfortably above the threshold) — a fully "dark
+  // mode contrast" color would never glow. The light-mode variant leans
+  // more saturated/deeper for better contrast against the cream
+  // background, and renders a bit larger too for extra legibility.
+  const color = isDarkTheme ? '#7C9EFF' : '#4C63E0';
 
   const texture = useGlyphTexture();
   const zeroGeometry = useGlyphGeometry(0);
@@ -93,6 +96,9 @@ const StarsContainer = () => {
 
   const ones = useMemo(() => digits.filter((d) => d.isOne), [digits]);
   const zeros = useMemo(() => digits.filter((d) => !d.isOne), [digits]);
+  // A bit larger in light mode for extra legibility against the busier,
+  // brighter background.
+  const scaleMultiplier = isDarkTheme ? 1 : 1.3;
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -106,13 +112,13 @@ const StarsContainer = () => {
       <Instances geometry={oneGeometry} limit={Math.max(ones.length, 1)} range={ones.length}>
         <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
         {ones.map((digit, i) => (
-          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale} />
+          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier} />
         ))}
       </Instances>
       <Instances geometry={zeroGeometry} limit={Math.max(zeros.length, 1)} range={zeros.length}>
         <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
         {zeros.map((digit, i) => (
-          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale} />
+          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier} />
         ))}
       </Instances>
     </group>

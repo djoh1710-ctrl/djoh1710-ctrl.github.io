@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
-const SYMBOL_COUNT = 26;
+const SYMBOL_COUNT = 40;
 
 // Kept vividly colored in both themes on purpose: this is decorative
 // ambiance, not text that needs contrast rules, and bloom only triggers on
@@ -25,9 +25,13 @@ const CloudContainer = () => {
 
   const symbols = useMemo(() => (
     Array.from({ length: SYMBOL_COUNT }, (_, i) => {
+      // Biased (sqrt) toward larger values, so more symbols land toward
+      // the bottom of the range — reads as a tunnel floor/walls receding
+      // into the distance instead of an even scatter.
+      const yBias = Math.sqrt(seededRandom(i * 78.233 + 2));
       const position: [number, number, number] = [
         -16 + seededRandom(i * 12.9898 + 1) * 32,
-        4 - seededRandom(i * 78.233 + 2) * 26,
+        4 - yBias * 34,
         -12 + seededRandom(i * 37.719 + 3) * 32,
       ];
       return {
