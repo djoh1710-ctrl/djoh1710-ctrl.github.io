@@ -34,7 +34,19 @@ export const useThemeStore = create<ThemeStore>()(
     }),
     {
       name: "theme-storage",
-      partialize: (state) => ({ theme: state.theme }),
+      // Persist only the theme *type* (light/dark), not its color. Colors
+      // always come fresh from AvailableThemes so palette updates apply to
+      // returning visitors instead of being frozen at whatever was cached
+      // on their first visit.
+      partialize: (state) => ({ themeType: state.theme.type }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as { themeType?: string } | undefined;
+        const matchedTheme = AvailableThemes.find((theme) => theme.type === persisted?.themeType);
+        return {
+          ...currentState,
+          theme: matchedTheme ?? currentState.theme,
+        };
+      },
     }
   )
 );
