@@ -46,10 +46,6 @@ const Work = () => {
 
   return (
     <group>
-      <mesh receiveShadow>
-        <planeGeometry args={[4, 4, 1]} />
-        <shadowMaterial opacity={0.1} />
-      </mesh>
       <ScrollControls style={{ zIndex: -1}} pages={2} maxSpeed={0.4}>
         <PortalBackdrop src="/backgrounds/work-bg.jpg" />
         <CodeOrb color="#7C9EFF" symbol="{ }" scale={new THREE.Vector3(1.8, 1.8, 1.8)} position={new THREE.Vector3(0, -6, 1)}/>

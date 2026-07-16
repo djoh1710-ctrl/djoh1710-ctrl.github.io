@@ -3,6 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import { AdaptiveDpr, Preload, ScrollControls, useProgress } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import gsap from "gsap";
 import { Suspense, useRef, useSyncExternalStore } from "react";
 
@@ -82,6 +83,15 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             </ScrollControls>
 
             <Preload all />
+
+            <EffectComposer multisampling={0} enableNormalPass={false}>
+              <Bloom
+                mipmapBlur
+                intensity={0.55}
+                luminanceThreshold={0.35}
+                luminanceSmoothing={0.9}
+                radius={0.6} />
+            </EffectComposer>
           </Suspense>
           <AdaptiveDpr pixelated/>
         </Canvas>
