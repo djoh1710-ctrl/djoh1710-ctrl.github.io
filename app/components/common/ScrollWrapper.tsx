@@ -2,13 +2,14 @@
 
 import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 
 import { usePortalStore, useScrollStore } from "@stores";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[]}) => {
   const { camera } = useThree();
+  const isMobile = useIsMobile();
   const data = useScroll();
   const isActive = usePortalStore((state) => !!state.activePortalId);
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress);

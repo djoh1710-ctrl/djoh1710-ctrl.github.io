@@ -1,10 +1,10 @@
 import { useThemeStore } from "@/app/stores";
-import { Text } from "@react-three/drei";
+import { Instance, Instances } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const STRAND_COUNT = 260;
+const DIGIT_COUNT = 400;
 const RADIUS = 200;
 
 // Deterministic pseudo-random (sine-hash) so the field is stable across
@@ -14,33 +14,42 @@ const seededRandom = (seed: number) => {
   return x - Math.floor(x);
 };
 
+interface Digit {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: number;
+  isOne: boolean;
+}
+
 const StarsContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
   const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
+  const color = isDarkTheme ? '#7C9EFF' : '#3D4F99';
 
-  const strands = useMemo(() => (
-    Array.from({ length: STRAND_COUNT }, (_, index) => {
+  const digits = useMemo(() => (
+    Array.from({ length: DIGIT_COUNT }, (_, index): Digit => {
       const radius = RADIUS * Math.cbrt(seededRandom(index * 12.9898 + 1));
       const theta = seededRandom(index * 78.233 + 2) * Math.PI * 2;
       const phi = Math.acos(2 * seededRandom(index * 37.719 + 3) - 1);
-      const position: [number, number, number] = [
-        radius * Math.sin(phi) * Math.cos(theta),
-        radius * Math.sin(phi) * Math.sin(theta),
-        radius * Math.cos(phi),
-      ];
-      const length = 3 + Math.floor(seededRandom(index * 45.164 + 4) * 4);
-      const text = Array.from({ length }, (_, bit) => (
-        seededRandom(index * 91.345 + bit * 3.71 + 5) > 0.5 ? '1' : '0'
-      )).join('\n');
-
       return {
-        position,
-        text,
-        fontSize: 0.8 + seededRandom(index * 63.982 + 6) * 1.4,
-        opacity: 0.25 + seededRandom(index * 20.117 + 7) * 0.5,
+        position: [
+          radius * Math.sin(phi) * Math.cos(theta),
+          radius * Math.sin(phi) * Math.sin(theta),
+          radius * Math.cos(phi),
+        ],
+        rotation: [
+          seededRandom(index * 20.117 + 4) * Math.PI,
+          seededRandom(index * 55.291 + 5) * Math.PI,
+          0,
+        ],
+        scale: 0.5 + seededRandom(index * 63.982 + 6) * 0.9,
+        isOne: seededRandom(index * 91.345 + 7) > 0.5,
       };
     })
   ), []);
+
+  const ones = useMemo(() => digits.filter((d) => d.isOne), [digits]);
+  const zeros = useMemo(() => digits.filter((d) => !d.isOne), [digits]);
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -48,24 +57,23 @@ const StarsContainer = () => {
     }
   });
 
-  const color = isDarkTheme ? '#7C9EFF' : '#3D4F99';
-
   return (
     <group ref={groupRef}>
-      {strands.map((strand, i) => (
-        <Text
-          key={i}
-          position={strand.position}
-          fontSize={strand.fontSize}
-          color={color}
-          fillOpacity={strand.opacity}
-          font="./Vercetti-Regular.woff"
-          anchorX="center"
-          anchorY="middle"
-          lineHeight={1.4}>
-          {strand.text}
-        </Text>
-      ))}
+      {/* Two instanced draw calls total, regardless of digit count. */}
+      <Instances limit={Math.max(ones.length, 1)} range={ones.length}>
+        <boxGeometry args={[0.16, 1, 0.05]} />
+        <meshBasicMaterial color={color} transparent opacity={0.55} />
+        {ones.map((digit, i) => (
+          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale} />
+        ))}
+      </Instances>
+      <Instances limit={Math.max(zeros.length, 1)} range={zeros.length}>
+        <torusGeometry args={[0.4, 0.13, 8, 12]} />
+        <meshBasicMaterial color={color} transparent opacity={0.55} />
+        {zeros.map((digit, i) => (
+          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale} />
+        ))}
+      </Instances>
     </group>
   );
 };

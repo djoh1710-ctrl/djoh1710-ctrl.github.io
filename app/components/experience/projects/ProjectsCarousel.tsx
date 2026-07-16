@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
-import { isMobile } from "react-device-detect";
 import ProjectTile from "./ProjectTile";
 
 import { PROJECTS } from "@constants";
 import { usePortalStore } from "@stores";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const ProjectsCarousel = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const isMobile = useIsMobile();
   const isActive = usePortalStore((state) => state.activePortalId === "projects");
   const activeId = isActive ? selectedId : null;
 

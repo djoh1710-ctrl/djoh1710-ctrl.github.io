@@ -5,10 +5,11 @@ import { usePortalStore, useThemeStore } from "@stores";
 import gsap from "gsap";
 import Image from 'next/image';
 import { useEffect, useRef } from "react";
-import { isMobile } from "react-device-detect";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const ThemeSwitcher = () => {
   const themeSwitcherRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const { nextTheme, theme } = useThemeStore();
   const isActive = usePortalStore((state) => state.activePortalId);
   const positionClass = isMobile ? 'top-2 right-2' : 'top-6 right-6';

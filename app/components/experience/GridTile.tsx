@@ -4,9 +4,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { usePortalStore } from '@stores';
 import gsap from "gsap";
 import { useEffect, useRef } from 'react';
-import { isMobile } from 'react-device-detect';
 import * as THREE from 'three';
 import { TriangleGeometry } from './Triangle';
+import { useIsMobile } from '@/app/hooks/useIsMobile';
 
 interface GridTileProps {
   id: string;
@@ -25,6 +25,7 @@ const GridTile = (props: GridTileProps) => {
   const portalRef = useRef(null);
   const { title, textAlign, children, color, position, id } = props;
   const { camera } = useThree();
+  const isMobile = useIsMobile();
   // Always light: this title sits on the portal tile face, which always
   // previews the portal's fixed dark interior underneath, regardless of
   // the page's light/dark theme toggle.

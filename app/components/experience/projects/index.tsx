@@ -2,9 +2,9 @@ import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { useEffect } from "react";
-import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore } from "@stores";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 import CodeOrb from "../../models/CodeOrb";
 import PortalBackdrop from "../../models/PortalBackdrop";
 import ProjectsCarousel from "./ProjectsCarousel";
@@ -12,6 +12,7 @@ import { TouchPanControls } from "./TouchPanControls";
 
 const Projects = () => {
   const { camera } = useThree();
+  const isMobile = useIsMobile();
   const isActive = usePortalStore((state) => state.activePortalId === "projects");
   const data = useScroll();
 

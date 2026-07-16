@@ -5,9 +5,9 @@ import { AdaptiveDpr, Preload, ScrollControls, useProgress } from "@react-three/
 import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
 import { Suspense, useRef, useSyncExternalStore } from "react";
-import { isMobile } from "react-device-detect";
 
 import { useThemeStore } from "@stores";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 import Preloader from "./Preloader";
 import ProgressLoader from "./ProgressLoader";
@@ -21,6 +21,7 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
   const backgroundColor = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const isMobile = useIsMobile();
 
   const canvasStyle: React.CSSProperties = {
     position: "absolute",
@@ -72,6 +73,7 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
           dpr={[1, 2]}>
           {/* <Perf/> */}
           <Suspense fallback={null}>
+            <fogExp2 attach="fog" args={[backgroundColor, 0.008]} />
             <ambientLight intensity={0.5} />
 
             <ScrollControls pages={4} damping={0.4} maxSpeed={1} distance={1} style={{ zIndex: 1 }}>

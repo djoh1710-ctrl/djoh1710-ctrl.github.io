@@ -3,14 +3,15 @@ import { useFrame } from "@react-three/fiber";
 import { useThemeStore } from "@stores";
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { FOOTER_LINKS } from "../../constants";
 import { FooterLink } from "../../types";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const FooterLinkItem = ({ link }: { link: FooterLink }) => {
   const iconRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
+  const isMobile = useIsMobile();
   const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
   const iconSrc = isDarkTheme ? link.icon : link.icon.replace('.svg', '-dark.svg');
   const onPointerOver = () => setHovered(true);
@@ -80,6 +81,7 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
 
 const Footer = () => {
   const groupRef = useRef<THREE.Group>(null);
+  const isMobile = useIsMobile();
   const data = useScroll();
 
   useFrame(() => {
