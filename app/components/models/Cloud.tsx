@@ -30,7 +30,7 @@ const CloudContainer = () => {
     POSITIONS.map((position, i) => ({
       position,
       text: SYMBOLS[i % SYMBOLS.length],
-      fontSize: 2 + seededRandom(i * 12.9898 + 1) * 2,
+      fontSize: 3 + seededRandom(i * 12.9898 + 1) * 2.5,
       color: i % 2 === 0 ? '#7C9EFF' : '#F2A65A',
       phase: seededRandom(i * 78.233 + 2) * Math.PI * 2,
     }))
@@ -53,7 +53,7 @@ const CloudContainer = () => {
           position={symbol.position}
           fontSize={symbol.fontSize}
           color={symbol.color}
-          fillOpacity={isDarkTheme ? 0.35 : 0.5}
+          fillOpacity={isDarkTheme ? 0.75 : 0.7}
           font="./soria-font.ttf"
           anchorX="center"
           anchorY="middle">
