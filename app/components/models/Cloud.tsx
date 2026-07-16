@@ -1,4 +1,3 @@
-import { useThemeStore } from "@/app/stores";
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
@@ -6,6 +5,13 @@ import * as THREE from "three";
 
 const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
 const SYMBOL_COUNT = 26;
+
+// Kept vividly colored in both themes on purpose: this is decorative
+// ambiance, not text that needs contrast rules, and bloom only triggers on
+// genuinely bright colors — a darkened "light mode" variant would never be
+// bright enough to glow.
+const BLUE = '#7C9EFF';
+const AMBER = '#F2A65A';
 
 // Deterministic pseudo-random (sine-hash) so values are stable across
 // re-renders without calling Math.random during render.
@@ -16,7 +22,6 @@ const seededRandom = (seed: number) => {
 
 const CloudContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
-  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
 
   const symbols = useMemo(() => (
     Array.from({ length: SYMBOL_COUNT }, (_, i) => {
@@ -29,20 +34,20 @@ const CloudContainer = () => {
         position,
         text: SYMBOLS[i % SYMBOLS.length],
         fontSize: 2.5 + seededRandom(i * 45.164 + 4) * 2.5,
-        isBlue: i % 2 === 0,
+        color: i % 2 === 0 ? BLUE : AMBER,
         phase: seededRandom(i * 91.345 + 5) * Math.PI * 2,
+        spinSpeed: 0.15 + seededRandom(i * 71.883 + 6) * 0.25,
       };
     })
   ), []);
 
-  const blueColor = isDarkTheme ? '#7C9EFF' : '#3D4F99';
-  const amberColor = isDarkTheme ? '#F2A65A' : '#95591A';
-
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
     groupRef.current.children.forEach((child, i) => {
-      const t = clock.elapsedTime * 0.3 + symbols[i].phase;
-      child.position.y = symbols[i].position[1] + Math.sin(t) * 0.6;
+      const symbol = symbols[i];
+      const t = clock.elapsedTime * 0.3 + symbol.phase;
+      child.position.y = symbol.position[1] + Math.sin(t) * 0.6;
+      child.rotation.y += delta * symbol.spinSpeed;
       child.rotation.z = Math.sin(t * 0.5) * 0.05;
     });
   });
@@ -50,17 +55,22 @@ const CloudContainer = () => {
   return (
     <group position={[0, -5, 0]} ref={groupRef}>
       {symbols.map((symbol, i) => (
-        <Text
-          key={i}
-          position={symbol.position}
-          fontSize={symbol.fontSize}
-          color={symbol.isBlue ? blueColor : amberColor}
-          fillOpacity={isDarkTheme ? 0.75 : 0.7}
-          font="./soria-font.ttf"
-          anchorX="center"
-          anchorY="middle">
-          {symbol.text}
-        </Text>
+        <group key={i} position={symbol.position}>
+          {/* Real 3D shape behind the glyph, not just flat text */}
+          <mesh>
+            <octahedronGeometry args={[symbol.fontSize * 0.55, 0]} />
+            <meshBasicMaterial color={symbol.color} wireframe transparent opacity={0.85} />
+          </mesh>
+          <Text
+            fontSize={symbol.fontSize}
+            color={symbol.color}
+            fillOpacity={0.95}
+            font="./soria-font.ttf"
+            anchorX="center"
+            anchorY="middle">
+            {symbol.text}
+          </Text>
+        </group>
       ))}
     </group>
   );

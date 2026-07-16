@@ -1,4 +1,3 @@
-import { useThemeStore } from "@/app/stores";
 import { Instance, Instances } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
@@ -57,8 +56,11 @@ const useGlyphGeometry = (uOffset: number) => useMemo(() => {
 
 const StarsContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
-  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
-  const color = isDarkTheme ? '#7C9EFF' : '#3D4F99';
+  // Kept vividly colored in both themes on purpose: this is decorative
+  // ambiance, not text that needs contrast rules, and bloom only triggers
+  // on genuinely bright colors — a darkened "light mode" variant would
+  // never be bright enough to glow.
+  const color = '#7C9EFF';
 
   const texture = useGlyphTexture();
   const zeroGeometry = useGlyphGeometry(0);
@@ -69,17 +71,20 @@ const StarsContainer = () => {
       const radius = RADIUS * Math.cbrt(seededRandom(index * 12.9898 + 1));
       const theta = seededRandom(index * 78.233 + 2) * Math.PI * 2;
       const phi = Math.acos(2 * seededRandom(index * 37.719 + 3) - 1);
+      const position: [number, number, number] = [
+        radius * Math.sin(phi) * Math.cos(theta),
+        radius * Math.sin(phi) * Math.sin(theta),
+        radius * Math.cos(phi),
+      ];
+      // Face each glyph back toward the center (where the camera roams),
+      // instead of a random tumble — flat sprites with a random rotation
+      // are mostly edge-on and unreadable from any given viewpoint.
+      const facing = new THREE.Object3D();
+      facing.position.set(...position);
+      facing.lookAt(0, 0, 0);
       return {
-        position: [
-          radius * Math.sin(phi) * Math.cos(theta),
-          radius * Math.sin(phi) * Math.sin(theta),
-          radius * Math.cos(phi),
-        ],
-        rotation: [
-          seededRandom(index * 20.117 + 4) * Math.PI,
-          seededRandom(index * 55.291 + 5) * Math.PI,
-          0,
-        ],
+        position,
+        rotation: [facing.rotation.x, facing.rotation.y, facing.rotation.z],
         scale: 1.4 + seededRandom(index * 63.982 + 6) * 2,
         isOne: seededRandom(index * 91.345 + 7) > 0.5,
       };
