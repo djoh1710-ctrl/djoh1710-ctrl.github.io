@@ -7,12 +7,14 @@ import * as THREE from "three";
 const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
 
 const POSITIONS: [number, number, number][] = [
-  [-1, 0, 0],
-  [2, 0, 2],
-  [-10, -10, 4],
-  [6, -3, 8],
-  [0, -20, 20],
-  [10, -15, -5],
+  [-11, 3, -4],
+  [9, 4, 6],
+  [-6, -12, 14],
+  [12, -8, 4],
+  [-14, -18, 20],
+  [4, -22, 16],
+  [14, -14, -8],
+  [-3, 6, -10],
 ];
 
 // Deterministic pseudo-random (sine-hash) so values are stable across

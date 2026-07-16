@@ -27,6 +27,7 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
     font: "./Vercetti-Regular.woff",
     color: "#E8E6E3",
     anchorX: textAlign,
+    anchorY: 'top' as const,
     fillOpacity: 2 - 2 * diff,
   }), [textAlign, diff]);
 
@@ -34,7 +35,7 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
     ...textProps,
     font: "./soria-font.ttf",
     fontSize: 0.6,
-    maxWidth: 3,
+    maxWidth: 4,
   }), [textProps]);
 
   return (
@@ -49,10 +50,10 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
             {point.year}
           </Text>
           <group position={[0, -0.5, 0]}>
-            <Text {...titleProps} fontSize={0.6} maxWidth={3} position={[0, -diff / 2, 0]}>
+            <Text {...titleProps} fontSize={0.6} maxWidth={4} position={[0, -diff / 2, 0]}>
               {point.title}
             </Text>
-            <Text {...textProps} fontSize={0.2} maxWidth={3.5} lineHeight={1.3} position={[0, -0.4 - diff, 0]}>
+            <Text {...textProps} fontSize={0.2} maxWidth={4} lineHeight={1.3} position={[0, -2.2 - diff, 0]}>
               {point.subtitle}
             </Text>
           </group>

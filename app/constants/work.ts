@@ -19,7 +19,7 @@ export const WORK_TIMELINE: WorkTimelinePoint[] = [
   {
     point: new THREE.Vector3(-3, -1, -6),
     year: 'ATHLETICS',
-    title: 'Athlete Recruiting Portfolios',
+    title: 'Athlete Portfolios',
     subtitle: 'Immersive recruiting portfolios for athletes',
     position: 'left',
   },

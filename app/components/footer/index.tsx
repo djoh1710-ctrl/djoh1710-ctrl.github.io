@@ -1,4 +1,4 @@
-import { Svg, Text, useCursor, useScroll } from "@react-three/drei";
+import { Svg, useCursor, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
@@ -8,7 +8,7 @@ import { FOOTER_LINKS } from "../../constants";
 import { FooterLink } from "../../types";
 
 const FooterLinkItem = ({ link }: { link: FooterLink }) => {
-  const textRef = useRef<THREE.Group>(null);
+  const iconRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const onPointerOver = () => setHovered(true);
   const onPointerOut = () => setHovered(false);
@@ -21,16 +21,6 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
       left: `${e.clientX}px`,
       duration: 0.6,
     });
-  };
-
-  const fontProps = {
-    font: "./Vercetti-Regular.woff",
-    fontSize: 0.2,
-    color: '#E8E6E3',
-    onPointerOver,
-    onPointerMove,
-    onPointerOut,
-    onClick,
   };
 
   useEffect(() => {
@@ -50,7 +40,7 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
   }, [])
 
   useEffect(() => {
-    if (isMobile) return
+    if (isMobile || !iconRef.current) return
 
     const hoverDiv = document.getElementById(`footer-link-${link.name}`);
 
@@ -60,28 +50,29 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
       gsap.to(hoverDiv, { opacity: 0 });
     }
 
-    gsap.to(textRef.current, {
-      letterSpacing: hovered ? 0.3 : 0,
+    gsap.to(iconRef.current.scale, {
+      x: hovered ? 1.3 : 1,
+      y: hovered ? 1.3 : 1,
+      z: hovered ? 1.3 : 1,
       duration: 0.3,
     });
 
     return () => {
       gsap.killTweensOf(hoverDiv);
-      gsap.killTweensOf(textRef.current);
+      if (iconRef.current) gsap.killTweensOf(iconRef.current.scale);
     }
   }, [hovered]);
 
   useCursor(hovered);
 
-  if (isMobile) {
-    return <Svg onClick={onClick} scale={0.0015} position={[0.1, 0.25, 0]} src={link.icon} />;
-  }
-
   return (
-    <Text ref={textRef} {...fontProps} >
-      {link.name.toUpperCase()}
-    </Text>
-  )
+    <group
+      ref={iconRef}
+      onClick={onClick}
+      {...(!isMobile && { onPointerOver, onPointerMove, onPointerOut })}>
+      <Svg scale={0.0015} position={[0.1, 0.25, 0]} src={link.icon} />
+    </group>
+  );
 }
 
 const Footer = () => {
@@ -95,10 +86,13 @@ const Footer = () => {
     }
   });
 
+  const spacing = isMobile ? 1.1 : 2;
+  const offset = -(spacing * (FOOTER_LINKS.length - 1)) / 2;
+
   const getLinks = () => {
     return FOOTER_LINKS.map((link, i) => {
       return (
-        <group key={i} position={[i * (isMobile ? 1.1 : 2), 0, 0]}>
+        <group key={i} position={[i * spacing, 0, 0]}>
           <FooterLinkItem link={link}/>
         </group>
       );
@@ -107,7 +101,7 @@ const Footer = () => {
 
   return (
     <group position={[0, -44, 18]} rotation={[-Math.PI / 2, 0, 0]} ref={groupRef}>
-      <group position={[isMobile ? -2.5 : -4, 0, 0]}>
+      <group position={[offset, 0, 0]}>
         { getLinks() }
       </group>
     </group>

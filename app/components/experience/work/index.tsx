@@ -2,7 +2,7 @@ import { ScrollControls } from "@react-three/drei";
 import { usePortalStore, useScrollStore } from "@stores";
 import { useEffect } from "react";
 import * as THREE from "three";
-import { Memory } from "../../models/Memory";
+import CodeOrb from "../../models/CodeOrb";
 import Timeline from "./Timeline";
 
 const Work = () => {
@@ -50,7 +50,7 @@ const Work = () => {
         <shadowMaterial opacity={0.1} />
       </mesh>
       <ScrollControls style={{ zIndex: -1}} pages={2} maxSpeed={0.4}>
-        <Memory scale={new THREE.Vector3(5, 5, 5)} position={new THREE.Vector3(0, -6, 1)}/>
+        <CodeOrb color="#7C9EFF" symbol="{ }" scale={new THREE.Vector3(1.8, 1.8, 1.8)} position={new THREE.Vector3(0, -6, 1)}/>
         <Timeline progress={isActive ? scrollProgress : 0} />
       </ScrollControls>
     </group>
