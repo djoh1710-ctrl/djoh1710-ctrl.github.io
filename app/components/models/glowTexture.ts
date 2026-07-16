@@ -27,3 +27,10 @@ export const getGlowTexture = () => {
   cached = new THREE.CanvasTexture(canvas);
   return cached;
 };
+
+// Shared glow color rule: the normal vivid periwinkle in dark mode, but a
+// lighter pearl-blue in light mode — a deep, saturated glow color reads as
+// visible against a near-black background but disappears against a light
+// one, since additive blending only ever brightens toward its own color.
+export const getGlowColor = (isDarkTheme: boolean) => (isDarkTheme ? '#7C9EFF' : '#B4C7FF');
+

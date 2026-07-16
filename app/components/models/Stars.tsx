@@ -3,7 +3,7 @@ import { Instance, Instances } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { getGlowTexture } from "./glowTexture";
+import { getGlowColor, getGlowTexture } from "./glowTexture";
 
 const DIGIT_COUNT = 400;
 const RADIUS = 200;
@@ -59,12 +59,13 @@ const useGlyphGeometry = (uOffset: number) => useMemo(() => {
 const StarsContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
   const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
-  // Both variants are deliberately kept bright enough to still trigger
-  // bloom (luminance comfortably above the threshold) — a fully "dark
-  // mode contrast" color would never glow. The light-mode variant leans
-  // more saturated/deeper for better contrast against the cream
-  // background, and renders a bit larger too for extra legibility.
-  const color = isDarkTheme ? '#7C9EFF' : '#4C63E0';
+  // The glyph fill needs real contrast against the background to read as
+  // text, so it stays a deeper, more saturated blue in light mode. The
+  // glow is additive (it only ever brightens), so it uses the lighter
+  // pearl-blue that actually reads as glowing against a light backdrop —
+  // a deep color there would look like nothing.
+  const fillColor = isDarkTheme ? '#7C9EFF' : '#4C63E0';
+  const glowColor = getGlowColor(isDarkTheme);
 
   const texture = useGlyphTexture();
   const glowTexture = useMemo(() => getGlowTexture(), []);
@@ -117,7 +118,7 @@ const StarsContainer = () => {
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial
           map={glowTexture}
-          color={color}
+          color={glowColor}
           transparent
           opacity={0.5}
           blending={THREE.AdditiveBlending}
@@ -128,13 +129,13 @@ const StarsContainer = () => {
       </Instances>
       {/* Two instanced draw calls total for the glyphs themselves. */}
       <Instances geometry={oneGeometry} limit={Math.max(ones.length, 1)} range={ones.length}>
-        <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
+        <meshBasicMaterial map={texture} color={fillColor} transparent alphaTest={0.1} depthWrite={false} />
         {ones.map((digit, i) => (
           <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier} />
         ))}
       </Instances>
       <Instances geometry={zeroGeometry} limit={Math.max(zeros.length, 1)} range={zeros.length}>
-        <meshBasicMaterial map={texture} color={color} transparent alphaTest={0.1} depthWrite={false} />
+        <meshBasicMaterial map={texture} color={fillColor} transparent alphaTest={0.1} depthWrite={false} />
         {zeros.map((digit, i) => (
           <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier} />
         ))}

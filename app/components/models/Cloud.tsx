@@ -1,16 +1,15 @@
+import { useThemeStore } from "@/app/stores";
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { getGlowTexture } from "./glowTexture";
+import { getGlowColor, getGlowTexture } from "./glowTexture";
 
 const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
 const SYMBOL_COUNT = 40;
 
-// Kept vividly colored in both themes on purpose: this is decorative
-// ambiance, not text that needs contrast rules, and bloom only triggers on
-// genuinely bright colors — a darkened "light mode" variant would never be
-// bright enough to glow.
+// Fill colors keep their two-tone variety in both themes — these are the
+// solid shape/text colors, not the glow.
 const BLUE = '#7C9EFF';
 const AMBER = '#F2A65A';
 
@@ -23,7 +22,9 @@ const seededRandom = (seed: number) => {
 
 const CloudContainer = () => {
   const groupRef = useRef<THREE.Group>(null);
+  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
   const glowTexture = useMemo(() => getGlowTexture(), []);
+  const glowColor = getGlowColor(isDarkTheme);
 
   const symbols = useMemo(() => (
     Array.from({ length: SYMBOL_COUNT }, (_, i) => {
@@ -67,7 +68,7 @@ const CloudContainer = () => {
             <planeGeometry args={[1, 1]} />
             <meshBasicMaterial
               map={glowTexture}
-              color={symbol.color}
+              color={glowColor}
               transparent
               opacity={0.6}
               blending={THREE.AdditiveBlending}

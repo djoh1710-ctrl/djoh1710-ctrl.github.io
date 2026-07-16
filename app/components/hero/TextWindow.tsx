@@ -3,13 +3,17 @@
 import { Text, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useThemeStore } from "@stores";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { getGlowColor, getGlowTexture } from "../models/glowTexture";
 
 const TextWindow = () => {
   const data = useScroll();
   const windowRef = useRef<THREE.Group>(null);
   const textColor = useThemeStore((state) => state.theme.text);
+  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
+  const glowColor = getGlowColor(isDarkTheme);
+  const glowTexture = useMemo(() => getGlowTexture(), []);
 
   useFrame(() => {
     const c = data.range(0.65, 0.15);
@@ -27,6 +31,18 @@ const TextWindow = () => {
 
   return (
     <group position={[0, -0.3, 0]} ref={windowRef}>
+
+      {/* Manual glow behind the tagline cluster */}
+      <mesh position={[0, 0, -0.7]} scale={3.2}>
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial
+          map={glowTexture}
+          color={glowColor}
+          transparent
+          opacity={0.4}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false} />
+      </mesh>
 
       <Text color={textColor} anchorX="left" anchorY="middle"
         fontSize={1.3}
