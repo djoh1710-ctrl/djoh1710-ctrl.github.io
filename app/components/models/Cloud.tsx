@@ -1,87 +1,67 @@
-import { Cloud, Clouds } from "@react-three/drei";
+import { useThemeStore } from "@/app/stores";
+import { Text } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
+const SYMBOLS = ['{ }', '</>', '=>', ';', '( )', '[ ]'];
+
+const POSITIONS: [number, number, number][] = [
+  [-1, 0, 0],
+  [2, 0, 2],
+  [-10, -10, 4],
+  [6, -3, 8],
+  [0, -20, 20],
+  [10, -15, -5],
+];
+
+// Deterministic pseudo-random (sine-hash) so values are stable across
+// re-renders without calling Math.random during render.
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
 const CloudContainer = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const isDarkTheme = useThemeStore((state) => state.theme.type === 'dark');
+
+  const symbols = useMemo(() => (
+    POSITIONS.map((position, i) => ({
+      position,
+      text: SYMBOLS[i % SYMBOLS.length],
+      fontSize: 2 + seededRandom(i * 12.9898 + 1) * 2,
+      color: i % 2 === 0 ? '#7C9EFF' : '#F2A65A',
+      phase: seededRandom(i * 78.233 + 2) * Math.PI * 2,
+    }))
+  ), []);
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const t = clock.elapsedTime * 0.3 + symbols[i].phase;
+      child.position.y = POSITIONS[i][1] + Math.sin(t) * 0.6;
+      child.rotation.z = Math.sin(t * 0.5) * 0.05;
+    });
+  });
+
   return (
-    <Clouds material={THREE.MeshBasicMaterial}
-      position={[0, -5, 0]}
-      frustumCulled={false}>
-      <Cloud seed={1}
-        segments={1}
-        concentrate="inside"
-        bounds={[10, 10, 10]}
-        growth={3}
-        position={[-1, 0, 0]}
-        smallestVolume={2}
-        scale={1.9}
-        volume={2}
-        speed={0.2}
-        fade={5}
-        />
-      <Cloud
-        seed={3}
-        segments={1}
-        concentrate="outside"
-        bounds={[10, 10, 10]}
-        growth={2}
-        position={[2, 0, 2]}
-        smallestVolume={2}
-        scale={1}
-        volume={2}
-        fade={3}
-        speed={0.1}/>
-
-      <Cloud
-        seed={4}
-        segments={1}
-        concentrate="outside"
-        bounds={[10, 20, 15]}
-        growth={4}
-        position={[-10, -10, 4]}
-        smallestVolume={2}
-        scale={2}
-        speed={0.2}
-        volume={3}/>
-
-      <Cloud
-        seed={5}
-        segments={1}
-        concentrate="outside"
-        bounds={[5, 5, 5]}
-        growth={2}
-        position={[6, -3, 8]}
-        smallestVolume={2}
-        scale={2}
-        volume={2}
-        fade={0.1}
-        speed={0.1}/>
-
-      <Cloud
-        seed={6}
-        segments={1}
-        concentrate="outside"
-        bounds={[5, 5, 5]}
-        growth={2}
-        position={[0, -20, 20]}
-        smallestVolume={2}
-        scale={4}
-        volume={3}
-        fade={0.1}
-        speed={0.1}/>
-
-      <Cloud
-        seed={7}
-        segments={1}
-        concentrate="outside"
-        bounds={[5, 5, 5]}
-        growth={2}
-        position={[10, -15, -5]}
-        smallestVolume={2}
-        scale={3}
-        volume={3}
-        fade={0.1}
-        speed={0.1}/>
-    </Clouds>);
-}
+    <group position={[0, -5, 0]} ref={groupRef}>
+      {symbols.map((symbol, i) => (
+        <Text
+          key={i}
+          position={symbol.position}
+          fontSize={symbol.fontSize}
+          color={symbol.color}
+          fillOpacity={isDarkTheme ? 0.35 : 0.5}
+          font="./soria-font.ttf"
+          anchorX="center"
+          anchorY="middle">
+          {symbol.text}
+        </Text>
+      ))}
+    </group>
+  );
+};
 
 export default CloudContainer;

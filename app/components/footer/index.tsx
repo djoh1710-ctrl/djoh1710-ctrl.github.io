@@ -26,7 +26,7 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
   const fontProps = {
     font: "./Vercetti-Regular.woff",
     fontSize: 0.2,
-    color: 'white',
+    color: '#E8E6E3',
     onPointerOver,
     onPointerMove,
     onPointerOut,

@@ -25,7 +25,7 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
 
   const textProps: Partial<TextProps> = useMemo(() => ({
     font: "./Vercetti-Regular.woff",
-    color: "white",
+    color: "#E8E6E3",
     anchorX: textAlign,
     fillOpacity: 2 - 2 * diff,
   }), [textAlign, diff]);

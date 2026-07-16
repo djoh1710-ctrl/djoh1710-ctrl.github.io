@@ -8,14 +8,16 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F4F1EA;
+  --foreground: #1A1A1A;
+  --accent: #7C9EFF;
+  --accent-warm: #F2A65A;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0B0E14;
+    --foreground: #E8E6E3;
   }
 }
 
