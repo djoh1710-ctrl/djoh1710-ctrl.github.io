@@ -39,7 +39,8 @@ const CodeOrb = ({ position, scale, color, symbol }: CodeOrbProps) => {
           transparent
           opacity={0.1}
           blending={THREE.AdditiveBlending}
-          depthWrite={false} />
+          depthWrite={false}
+          fog={false} />
       </mesh>
       {/* Translucent glowing core, counter-rotating for depth */}
       <mesh ref={coreRef}>

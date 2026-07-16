@@ -38,8 +38,7 @@ const Hero = () => {
 
   const fontProps = {
     font: "./soria-font.ttf",
-    fontSize: isMobile ? 0.7 : 1.2,
-    maxWidth: isMobile ? 5.5 : 14,
+    fontSize: 1.2,
   };
 
   return (
@@ -54,7 +53,8 @@ const Hero = () => {
           transparent
           opacity={0.35}
           blending={THREE.AdditiveBlending}
-          depthWrite={false} />
+          depthWrite={false}
+          fog={false} />
       </mesh>
       <StarsContainer />
       <CloudContainer/>

@@ -70,9 +70,10 @@ const CloudContainer = () => {
               map={glowTexture}
               color={glowColor}
               transparent
-              opacity={0.6}
+              opacity={0.5}
               blending={THREE.AdditiveBlending}
-              depthWrite={false} />
+              depthWrite={false}
+              fog={false} />
           </mesh>
           {/* Real 3D shape behind the glyph, not just flat text */}
           <mesh>

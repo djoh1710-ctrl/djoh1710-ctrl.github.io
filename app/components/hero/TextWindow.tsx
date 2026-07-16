@@ -41,7 +41,8 @@ const TextWindow = () => {
           transparent
           opacity={0.4}
           blending={THREE.AdditiveBlending}
-          depthWrite={false} />
+          depthWrite={false}
+          fog={false} />
       </mesh>
 
       <Text color={textColor} anchorX="left" anchorY="middle"

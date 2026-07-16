@@ -120,11 +120,12 @@ const StarsContainer = () => {
           map={glowTexture}
           color={glowColor}
           transparent
-          opacity={0.5}
+          opacity={0.3}
           blending={THREE.AdditiveBlending}
-          depthWrite={false} />
+          depthWrite={false}
+          fog={false} />
         {digits.map((digit, i) => (
-          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier * 2.2} />
+          <Instance key={i} position={digit.position} rotation={digit.rotation} scale={digit.scale * scaleMultiplier * 1.6} />
         ))}
       </Instances>
       {/* Two instanced draw calls total for the glyphs themselves. */}
